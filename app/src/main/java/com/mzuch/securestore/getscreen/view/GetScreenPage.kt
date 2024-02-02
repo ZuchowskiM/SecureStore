@@ -59,16 +59,16 @@ fun GetScreenView(
             }
         },
         onDone = {
-            focusManager.clearFocus()
             keyboardController?.hide()
+            focusManager.clearFocus()
             getData(keyText.lowercase())
             keyText = ""
         },
     )
     Spacer(modifier = Modifier.size(8.dp))
     GetButton(onClick = {
-        focusManager.clearFocus()
         keyboardController?.hide()
+        focusManager.clearFocus()
         getData(keyText.lowercase())
         keyText = ""
     })

@@ -76,8 +76,8 @@ fun SaveScreenView(
             }
         },
         onDone = {
-            focusManager.clearFocus()
             keyboardController?.hide()
+            focusManager.clearFocus()
             saveData(keyText.lowercase(), valueText)
             keyText = ""
             valueText = ""
@@ -85,8 +85,8 @@ fun SaveScreenView(
     )
     Spacer(modifier = Modifier.size(8.dp))
     SaveButton(onClick = {
-        focusManager.clearFocus()
         keyboardController?.hide()
+        focusManager.clearFocus()
         saveData(keyText.lowercase(), valueText)
         keyText = ""
         valueText = ""
