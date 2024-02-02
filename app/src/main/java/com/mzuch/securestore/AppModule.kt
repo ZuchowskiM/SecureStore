@@ -4,11 +4,13 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.mzuch.securestore.repository.ValueRepository
 import com.mzuch.securestore.repository.ValueRepositoryImpl
+import com.mzuch.securestore.savescreen.viewmodel.SaveScreenViewModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    single {
+    single(createdAtStart = true) {
         val masterKey = MasterKey.Builder(androidContext())
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
@@ -21,5 +23,6 @@ val appModule = module {
         )
     }
     factory<ValueRepository> { ValueRepositoryImpl(get()) }
+    viewModel { SaveScreenViewModel(get()) }
 }
 
