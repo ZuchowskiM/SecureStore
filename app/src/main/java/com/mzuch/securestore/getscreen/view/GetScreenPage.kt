@@ -59,18 +59,18 @@ fun GetScreenView(
             }
         },
         onDone = {
-            keyText = ""
             focusManager.clearFocus()
             keyboardController?.hide()
             getData(keyText.lowercase())
+            keyText = ""
         },
     )
     Spacer(modifier = Modifier.size(8.dp))
     GetButton(onClick = {
-        keyText = ""
         focusManager.clearFocus()
         keyboardController?.hide()
         getData(keyText.lowercase())
+        keyText = ""
     })
     Spacer(modifier = Modifier.size(24.dp))
     Text(text = uiState)
