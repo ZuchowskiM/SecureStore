@@ -10,16 +10,20 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mzuch.securestore.getscreen.viewmodel.GetScreenViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun GetScreenPage() {
+fun GetScreenPage(viewModel: GetScreenViewModel = koinViewModel()) {
+    val uiState = viewModel.uiState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -27,33 +31,42 @@ fun GetScreenPage() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        KeyTextField()
-        Spacer(modifier = Modifier.size(8.dp))
-        GetButton()
+        GetScreenView(uiState = uiState.value, getData = viewModel::getData)
     }
 }
 
 @Composable
-fun KeyTextField() {
-    var text by remember {
+fun GetScreenView(
+    uiState: String, getData: (String) -> Unit
+) {
+    val maxLength = 20
+    var keyText by rememberSaveable {
         mutableStateOf("")
     }
-    val maxLength = 20;
+    KeyTextField(text = keyText, onValueChanged = {
+        if (it.length <= maxLength) {
+            keyText = it
+        }
+    })
+    Spacer(modifier = Modifier.size(8.dp))
+    GetButton(onClick = { getData(keyText) })
+    Spacer(modifier = Modifier.size(24.dp))
+    Text(text = uiState)
+}
+
+@Composable
+fun KeyTextField(text: String, onValueChanged: (String) -> Unit) {
     OutlinedTextField(
         value = text,
-        onValueChange = {
-            if (it.length <= maxLength) {
-                text = it
-            }
-        },
+        onValueChange = onValueChanged,
         maxLines = 1,
         label = { Text("Your key") },
     )
 }
 
 @Composable
-fun GetButton() {
-    OutlinedButton(onClick = { }) {
+fun GetButton(onClick: () -> Unit) {
+    OutlinedButton(onClick = onClick) {
         Text("Get")
     }
 }

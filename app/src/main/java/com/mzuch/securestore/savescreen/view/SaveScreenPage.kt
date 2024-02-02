@@ -23,9 +23,7 @@ import com.mzuch.securestore.savescreen.viewmodel.SaveScreenViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SaveScreenPage(
-    viewModel: SaveScreenViewModel = koinViewModel()
-) {
+fun SaveScreenPage(viewModel: SaveScreenViewModel = koinViewModel()) {
     val uiState = viewModel.uiState.collectAsState()
     Column(
         modifier = Modifier

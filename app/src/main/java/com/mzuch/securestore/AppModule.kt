@@ -2,6 +2,7 @@ package com.mzuch.securestore
 
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.mzuch.securestore.getscreen.viewmodel.GetScreenViewModel
 import com.mzuch.securestore.repository.ValueRepository
 import com.mzuch.securestore.repository.ValueRepositoryImpl
 import com.mzuch.securestore.savescreen.viewmodel.SaveScreenViewModel
@@ -24,5 +25,6 @@ val appModule = module {
     }
     factory<ValueRepository> { ValueRepositoryImpl(get()) }
     viewModel { SaveScreenViewModel(get()) }
+    viewModel { GetScreenViewModel(get()) }
 }
 
