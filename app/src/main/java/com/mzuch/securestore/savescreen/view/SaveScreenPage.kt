@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActionScope
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -19,13 +21,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.mzuch.securestore.savescreen.viewmodel.SaveScreenViewModel
 import org.koin.androidx.compose.koinViewModel
-import java.util.Locale
 
 @Composable
 fun SaveScreenPage(viewModel: SaveScreenViewModel = koinViewModel()) {
@@ -50,6 +51,8 @@ fun SaveScreenView(
     saveData: (String, String) -> Unit
 ) {
     val maxLength = 20
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     var keyText by rememberSaveable {
         mutableStateOf("")
     }
@@ -72,9 +75,22 @@ fun SaveScreenView(
                 valueText = it
             }
         },
+        onDone = {
+            keyText = ""
+            valueText = ""
+            focusManager.clearFocus()
+            keyboardController?.hide()
+            saveData(keyText.lowercase(), valueText)
+        }
     )
     Spacer(modifier = Modifier.size(8.dp))
-    SaveButton(onClick = { saveData(keyText.lowercase(), valueText) })
+    SaveButton(onClick = {
+        keyText = ""
+        valueText = ""
+        focusManager.clearFocus()
+        keyboardController?.hide()
+        saveData(keyText.lowercase(), valueText)
+    })
     Spacer(modifier = Modifier.size(24.dp))
     Text(text = uiState)
 }
@@ -91,12 +107,17 @@ fun SaveKeyTextField(keyText: String, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-fun ValueTextField(valueText: String, onValueChange: (String) -> Unit) {
+fun ValueTextField(
+    valueText: String,
+    onValueChange: (String) -> Unit,
+    onDone: KeyboardActionScope.() -> Unit
+) {
     OutlinedTextField(
         value = valueText,
         onValueChange = onValueChange,
         maxLines = 1,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = onDone),
         label = { Text("Your Text") },
     )
 }

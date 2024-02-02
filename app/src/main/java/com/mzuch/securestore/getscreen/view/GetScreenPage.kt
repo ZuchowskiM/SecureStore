@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActionScope
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -18,6 +20,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.mzuch.securestore.getscreen.viewmodel.GetScreenViewModel
@@ -42,27 +46,46 @@ fun GetScreenView(
     uiState: String, getData: (String) -> Unit
 ) {
     val maxLength = 20
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     var keyText by rememberSaveable {
         mutableStateOf("")
     }
-    KeyTextField(text = keyText, onValueChanged = {
-        if (it.length <= maxLength) {
-            keyText = it
-        }
-    })
+    KeyTextField(
+        text = keyText,
+        onValueChanged = {
+            if (it.length <= maxLength) {
+                keyText = it
+            }
+        },
+        onDone = {
+            keyText = ""
+            focusManager.clearFocus()
+            keyboardController?.hide()
+            getData(keyText.lowercase())
+        },
+    )
     Spacer(modifier = Modifier.size(8.dp))
-    GetButton(onClick = { getData(keyText.lowercase()) })
+    GetButton(onClick = {
+        keyText = ""
+        focusManager.clearFocus()
+        keyboardController?.hide()
+        getData(keyText.lowercase())
+    })
     Spacer(modifier = Modifier.size(24.dp))
     Text(text = uiState)
 }
 
 @Composable
-fun KeyTextField(text: String, onValueChanged: (String) -> Unit) {
+fun KeyTextField(
+    text: String, onValueChanged: (String) -> Unit, onDone: KeyboardActionScope.() -> Unit
+) {
     OutlinedTextField(
         value = text,
         onValueChange = onValueChanged,
         maxLines = 1,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = onDone),
         label = { Text("Your key") },
     )
 }
