@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mzuch.securestore.savescreen.viewmodel.SaveScreenViewModel
 import org.koin.androidx.compose.koinViewModel
+import java.util.Locale
 
 @Composable
 fun SaveScreenPage(viewModel: SaveScreenViewModel = koinViewModel()) {
@@ -69,7 +70,7 @@ fun SaveScreenView(
         },
     )
     Spacer(modifier = Modifier.size(8.dp))
-    SaveButton(onClick = { saveData(keyText, valueText) })
+    SaveButton(onClick = { saveData(keyText.lowercase(), valueText) })
     Spacer(modifier = Modifier.size(24.dp))
     Text(text = uiState)
 }

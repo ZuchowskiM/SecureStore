@@ -49,7 +49,7 @@ fun GetScreenView(
         }
     })
     Spacer(modifier = Modifier.size(8.dp))
-    GetButton(onClick = { getData(keyText) })
+    GetButton(onClick = { getData(keyText.lowercase()) })
     Spacer(modifier = Modifier.size(24.dp))
     Text(text = uiState)
 }

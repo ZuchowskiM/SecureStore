@@ -15,6 +15,10 @@ class SaveScreenViewModel(private val valueRepository: ValueRepository) : ViewMo
 
     fun saveData(key: String, value: String) {
         viewModelScope.launch {
+            if (key.isBlank() || value.isBlank()) {
+                _uiState.update { "Key and value cannot be empty" }
+                return@launch
+            }
             val isSuccess = valueRepository.saveValue(key, value)
             if (isSuccess) {
                 _uiState.update { "Data saved successfully" }
